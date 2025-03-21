@@ -6,7 +6,7 @@ const Campground = require('../models/Campground');
 exports.register = async (req, res, next) => {
 
     try {
-        const { name, email, password, role, tel, address } = req.body;
+        const { name, email, password, role, tel, address, picture } = req.body;
         //create user
         const user = await User.create({
             name,
@@ -14,6 +14,7 @@ exports.register = async (req, res, next) => {
             tel,
             address,
             password,
+            picture, 
             role
         });
         sendTokenResponse(user, 200, res);
@@ -54,7 +55,7 @@ const sendTokenResponse = (user, statusCode, res) => {
     //create token
     const token = user.getSignedJwtToken();
     const options = {
-        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() +  parseInt(process.env.JWT_COOKIE_EXPIRE, 10) * 24 * 60 * 60 * 1000),
         httpOnly: true
     };
     if (process.env.NODE_ENV === 'production') {
@@ -82,11 +83,11 @@ exports.logout = async (req, res, next) => {
 
 exports.updateProfile = async (req, res, next) => {
     try {
-        const { name, tel, address } = req.body;
+        const { name, tel, address, picture } = req.body;
 
         const user = await User.findByIdAndUpdate(
             req.user.id,
-            { name, tel, address },
+            { name, tel, address, picture },
             { new: true, runValidators: true }
         );
 

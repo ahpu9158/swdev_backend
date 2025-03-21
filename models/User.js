@@ -25,6 +25,9 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'please add your address'],
     },
+    picture: {
+        type: String,
+    },
     role: {
         type: String,
         enum: ['user', 'admin'],
