@@ -1,0 +1,23 @@
+@startuml manage-promotion
+
+header Promotion Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Promotion (Get Single Promotion)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:promotions" as routerPromotions
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:promotions" as controllersPromotions
+participant "<<models>>\n:Promotion" as modelPromotion
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:promotions" as PromotionsDatabase
+
+routerPromotions -> controllersPromotions ++: getPromotion()
+controllersPromotions -> modelPromotion ++: findById(req.params.id).populate({ path: 'campground', select: 'name address tel' })
+modelPromotion -> PromotionsDatabase ++: PromotionSchema
+PromotionsDatabase --> modelPromotion --: Promotion
+controllersPromotions->client --: response (Single Promotion)
+
+
+@enduml

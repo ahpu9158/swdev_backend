@@ -1,0 +1,21 @@
+@startuml user-authentication
+
+header User Authentication Sequence Diagram
+footer Page %page% of %lastpage%
+title "User Authentication (getMe)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<controllers>>\n:auth" as controllersAuth
+participant "<<model>>\n:User" as modelUser
+database "<<MongoDB>>\n:users" as UsersDatabase
+
+routerAuth -> controllersAuth ++: getMe()
+controllersAuth -> modelUser ++: User.findById(req.user.id)
+modelUser -> UsersDatabase ++: UserSchema
+UsersDatabase --> modelUser --: User Data
+controllersAuth -> client --: response (User Info)
+
+
+@enduml

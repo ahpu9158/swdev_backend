@@ -1,0 +1,24 @@
+@startuml manage-review
+
+header Review Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Review (Update Review)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:reviews" as routerReviews
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:reviews" as controllersReviews
+participant "<<models>>\n:Review" as modelReview
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:reviews" as ReviewsDatabase
+
+routerReviews -> middlewareAuth ++: protect(), authorize('admin','user')
+middlewareAuth -> controllersReviews ++: updateReview()
+controllersReviews -> modelReview ++: findByIdAndUpdate(req.params.id, req.body)
+modelReview -> ReviewsDatabase ++: ReviewSchema
+ReviewsDatabase --> modelReview --: Updated Review
+controllersReviews->client --: response (Updated Review)
+
+
+@enduml

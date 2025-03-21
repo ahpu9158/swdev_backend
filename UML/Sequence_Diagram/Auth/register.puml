@@ -1,0 +1,22 @@
+@startuml user-authentication
+
+header User Authentication Sequence Diagram
+footer Page %page% of %lastpage%
+title "User Authentication (Register)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<controllers>>\n:auth" as controllersAuth
+participant "<<model>>\n:User" as modelUser
+database "<<MongoDB>>\n:users" as UsersDatabase
+
+routerAuth -> controllersAuth ++: register()
+controllersAuth -> modelUser ++: User.create(req.body)
+modelUser -> UsersDatabase ++: UserSchema
+UsersDatabase --> modelUser --: New User
+controllersAuth -> controllersAuth ++: sendTokenResponse(user, 200, res)
+controllersAuth -> client --: response (User Registered)
+
+
+@enduml

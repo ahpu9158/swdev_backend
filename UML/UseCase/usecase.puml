@@ -1,0 +1,51 @@
+@startuml camp
+skinparam ActorStyle Hollow
+left to right direction
+
+actor "Authenticated User" as AuthUser  
+actor "User" as User  
+actor "Admin" as Admin  
+
+
+rectangle "Campground Management" {
+    usecase "View Campgrounds" as UC5
+    usecase "Create Campground" as UC6
+    usecase "Update Campground" as UC7
+    usecase "Delete Campground" as UC8
+}
+
+rectangle "Booking Management" {
+    usecase "Create Booking" as UC17
+    usecase "View Booking" as UC18
+    usecase "Update Booking" as UC19
+    usecase "Cancel Booking" as UC20
+}
+rectangle "Authentication System" {
+    usecase "Register User" as UC1
+    usecase "Login User" as UC2
+    usecase "Get User Info" as UC3
+    usecase "Logout User" as UC4
+}
+
+AuthUser --> UC5
+AuthUser --> UC17
+AuthUser --> UC18
+AuthUser --> UC19
+AuthUser --> UC20
+
+
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC17
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+
+@enduml

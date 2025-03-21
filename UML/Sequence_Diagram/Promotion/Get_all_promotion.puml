@@ -1,0 +1,45 @@
+@startuml manage-promotion
+
+header Promotion Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Promotion (Get All Promotions)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:promotions" as routerPromotions
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:promotions" as controllersPromotions
+participant "<<models>>\n:Promotion" as modelPromotion
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:promotions" as PromotionsDatabase
+
+alt Get All Promotions
+    client->server ++: req.get('/api/v1/promotions')
+    server->routerPromotions ++: app.use('/promotions', promotions)
+end
+
+routerPromotions -> controllersPromotions ++: getPromotions()
+
+alt Query Processing
+    controllersPromotions -> modelPromotion ++: Promotion.find()
+else Query Processing with Select
+    controllersPromotions -> modelPromotion ++: Promotion.find().select(req.query.select)
+end
+
+alt Query Processing with Sort
+    controllersPromotions -> modelPromotion ++: sort(req.query.sort)
+else No Sorting
+    controllersPromotions -> modelPromotion ++: sort('-discount')
+end
+
+alt Pagination
+    controllersPromotions -> modelPromotion ++: skip(startIndex).limit(limit)
+end
+
+modelPromotion -> PromotionsDatabase ++: PromotionSchema
+PromotionsDatabase --> modelPromotion --: Promotion
+controllersPromotions -> modelPromotion ++: populate({ path: 'campground', select: 'name address tel' })
+modelPromotion --> controllersPromotions --: Populated Promotion Data
+controllersPromotions->client --: response (All Promotions)
+
+@enduml

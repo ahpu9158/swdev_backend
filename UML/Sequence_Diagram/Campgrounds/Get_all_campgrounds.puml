@@ -1,0 +1,45 @@
+@startuml manage-campground
+
+header Campground Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (Get All Campgrounds)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<models>>\n:Campground" as modelCampground
+participant "<<models>>\n:Booking" as modelBooking
+participant "<<models>>\n:Review" as modelReview
+participant "<<models>>\n:Promotion" as modelPromotion
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+alt Get All Campgrounds
+    client->server ++: req.get('/api/v1/campgrounds')
+    server->routerCampgrounds ++: app.use('/campgrounds', campgrounds)
+end
+
+routerCampgrounds -> controllersCampgrounds ++: getCampgrounds()
+
+alt Query Processing
+    controllersCampgrounds -> modelCampground ++: Campground.find()
+else Query Processing with Select
+    controllersCampgrounds -> modelCampground ++: Campground.find().select(req.query.select)
+end
+
+alt Query Processing with Sort
+    controllersCampgrounds -> modelCampground ++: sort(req.query.sort)
+else No Sorting
+    controllersCampgrounds -> modelCampground ++: sort('-createdAt')
+end
+
+alt Pagination
+    controllersCampgrounds -> modelCampground ++: skip(startIndex).limit(limit)
+end
+
+modelCampground -> CampgroundsDatabase ++: CampgroundSchema
+CampgroundsDatabase --> modelCampground --: Campground
+controllersCampgrounds->client --: response (All Campgrounds)
+
+@enduml

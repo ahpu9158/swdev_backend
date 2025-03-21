@@ -1,0 +1,25 @@
+@startuml manage-campground
+
+header Campground Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Campground (Get Single Campground)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:campgrounds" as routerCampgrounds
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:campgrounds" as controllersCampgrounds
+participant "<<models>>\n:Campground" as modelCampground
+participant "<<models>>\n:Booking" as modelBooking
+participant "<<models>>\n:Review" as modelReview
+participant "<<models>>\n:Promotion" as modelPromotion
+database "<<MongoDB>>\n:campgrounds" as CampgroundsDatabase
+
+routerCampgrounds -> controllersCampgrounds ++: getCampground()
+controllersCampgrounds -> modelCampground ++: findById(req.params.id)
+modelCampground -> CampgroundsDatabase ++: CampgroundSchema
+CampgroundsDatabase --> modelCampground --: Campground
+controllersCampgrounds->client --: response (Single Campground)
+
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml manage-bookings
+
+header Booking Management Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Bookings(Update Booking)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<models>>\n:Booking" as modelBooking
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+
+routerBookings -> middlewareAuth ++: protect(), authorize('admin','user')
+middlewareAuth -> controllersBookings ++: updateBooking()
+controllersBookings -> modelBooking ++: findById(req.params.id)
+modelBooking -> BookingsDatabase ++: BookingSchema
+BookingsDatabase --> modelBooking --: Booking
+controllersBookings -> modelBooking ++: findByIdAndUpdate(req.params.id, req.body)
+modelBooking -> BookingsDatabase ++: BookingSchema
+controllersBookings->client --: response (Updated Booking)
+
+
+@enduml

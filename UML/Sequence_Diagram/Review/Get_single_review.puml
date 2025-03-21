@@ -1,0 +1,22 @@
+@startuml manage-review
+
+header Review Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Review (Get Single Review)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:reviews" as routerReviews
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:reviews" as controllersReviews
+participant "<<models>>\n:Review" as modelReview
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:reviews" as ReviewsDatabase
+
+routerReviews -> controllersReviews ++: getReview()
+controllersReviews -> modelReview ++: findById(req.params.id)
+modelReview -> ReviewsDatabase ++: ReviewSchema
+ReviewsDatabase --> modelReview --: Review
+controllersReviews->client --: response (Single Review)
+
+@enduml

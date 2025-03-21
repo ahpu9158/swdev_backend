@@ -1,0 +1,43 @@
+@startuml manage-bookings
+
+header Booking Management Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Bookings(Get All Booking )"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:bookings" as routerBookings
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:bookings" as controllersBookings
+participant "<<models>>\n:Booking" as modelBooking
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:bookings" as BookingsDatabase
+
+alt Get All Bookings
+    client->server ++: req.get('/api/v1/bookings')
+    server->routerBookings ++: app.use('/bookings', bookings)
+else Rerouting From CampgroundRoute
+    client -> server --: req.get('/campgrounds/:campgroundId/bookings')
+    server->routerCampgrounds ++: app.use('/campgrounds', campgrounds)
+    routerCampgrounds -> routerBookings :router.use('/:campgroundId/bookings', bookingRouter)
+end
+
+routerBookings -> middlewareAuth ++: protect()
+middlewareAuth -> controllersBookings ++: getBookings()
+
+alt Not Admin
+    controllersBookings->modelBooking ++: find({user:req.user.id}).populate({path:'campground',select:'name address tel'})
+else Admin
+    alt Has campID
+        controllersBookings->modelBooking ++: find({campground:req.params.campgroundId}).populate({path:'campground',select:'name address tel'})
+    else No campID
+        controllersBookings->modelBooking ++: find().populate({path:'campground',select:'name address tel'})
+    end
+end
+
+modelBooking ->BookingsDatabase ++: BookingSchema
+BookingsDatabase --> modelBooking --: Bookings
+controllersBookings->client --: response (All Bookings)
+
+
+@enduml

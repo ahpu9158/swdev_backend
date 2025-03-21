@@ -1,0 +1,100 @@
+
+@startuml normal
+
+class "CampgroundBookingApp" <<Application>> {
+}
+
+' Authentication Resources
+class "<<Resource>>\nAuth" {
+}
+
+class "<<Resource>>\nLogin" {
+  <<POST>> + login() : TOKEN
+}
+
+class "<<Resource>>\nRegister" {
+  <<POST>> + register() : TOKEN
+}
+
+class "<<Resource>>\nGetMe" {
+  <<GET>> + getMe() : User
+}
+
+class "<<Resource>>\nLogout" {
+  <<POST>> + logout() : void
+}
+
+' Model Definitions
+class "<<Model>>\nUser" {
+  - username: String
+  - email: String
+  - password: String
+  - role: String
+  - createdAt: Date
+}
+
+class "<<Model>>\nCampground" {
+  - name: String
+  - address: String
+  - tel: String
+  - price: Number
+  - capacity: Number
+  - description: String
+  - image: String
+}
+
+class "<<Model>>\nBooking" {
+  - checkInDate: Date
+  - checkOutDate: Date
+  - user: ObjectId
+  - campground: ObjectId
+  - createdAt: Date
+}
+
+' Campground Resources
+class "<<Resource>>\nCampgrounds" {
+    <<GET>> + getCampgrounds() : Campground
+    <<POST>> + createCampground() : Campground
+}
+
+class "<<Resource>>\nCampground" {
+  <<GET>> + getCampground() : Campground
+  <<PUT>> + updateCampground() : Campground
+  <<DELETE>> + deleteCampground() : void
+}
+
+' Booking Resources
+class "<<Resource>>\nBooking" {
+    <<GET>> + getBooking() : Booking
+    <<PUT>> + updateBooking() : Booking
+    <<DELETE>> + deleteBooking() : void
+}
+
+class "<<Resource>>\nBookings" {
+  <<GET>> + getBookings() : Booking
+  <<POST>> + addBooking() : Booking
+}
+
+' Relationships
+"CampgroundBookingApp" -- "<<Resource>>\nAuth" : <<Path>>\Auth
+"CampgroundBookingApp" -- "<<Resource>>\nCampgrounds" : <<Path>>\ncampground
+"CampgroundBookingApp" -- "<<Resource>>\nBookings" : <<Path>>\nbooking
+
+"<<Resource>>\nAuth" -- "<<Resource>>\nLogin" : <<Path>>\nlogin
+"<<Resource>>\nAuth" -- "<<Resource>>\nRegister"  : <<Path>>\nregister
+"<<Resource>>\nAuth" -- "<<Resource>>\nGetMe"  : <<Path>>\ngetme
+"<<Resource>>\nAuth" -- "<<Resource>>\nLogout"  : <<Path>>\nlogout
+
+"<<Resource>>\nLogin" -- "<<Model>>\nUser" : <<Use>>
+"<<Resource>>\nRegister" -- "<<Model>>\nUser" : <<Use>>
+"<<Resource>>\nGetMe" -- "<<Model>>\nUser" : <<Use>>
+
+"<<Resource>>\nBookings" -- "<<Resource>>\nBooking" : <<Path>>\nBooking_ID
+"<<Resource>>\nBooking" -- "<<Model>>\nBooking" : <<Use>>
+"<<Resource>>\nBookings" -- "<<Model>>\nBooking" : <<Use>>
+
+"<<Resource>>\nCampgrounds" -- "<<Resource>>\nCampground" : <<Path>>\nCampground_ID
+"<<Resource>>\nCampgrounds" -- "<<Model>>\nCampground" : <<Use>>
+"<<Resource>>\nCampground" -- "<<Model>>\nCampground" : <<Use>>
+
+@enduml

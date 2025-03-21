@@ -1,0 +1,23 @@
+@startuml manage-promotion
+
+header Promotion Sequence Diagram
+footer Page %page% of %lastpage%
+title "Manage Promotion (Delete Promotion)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<routes>>\n:promotions" as routerPromotions
+participant "<<middleware>>\n:auth" as middlewareAuth
+participant "<<controllers>>\n:promotions" as controllersPromotions
+participant "<<models>>\n:Promotion" as modelPromotion
+participant "<<models>>\n:Campground" as modelCampground
+database "<<MongoDB>>\n:promotions" as PromotionsDatabase
+
+routerPromotions -> middlewareAuth ++: protect(),authorize('admin')
+middlewareAuth -> controllersPromotions ++: deletePromotion()
+controllersPromotions -> modelPromotion ++: findByIdAndDelete(req.params.id)
+modelPromotion -> PromotionsDatabase ++: PromotionSchema
+PromotionsDatabase --> modelPromotion --: Deleted Promotion
+controllersPromotions->client --: response (Promotion Deleted)
+
+@enduml

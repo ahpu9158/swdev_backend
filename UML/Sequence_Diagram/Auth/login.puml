@@ -1,0 +1,36 @@
+@startuml user-authentication
+
+header User Authentication Sequence Diagram
+footer Page %page% of %lastpage%
+title "User Authentication (Login)"
+
+participant "Client" as client
+participant "<<javaScript>>\n:server" as server
+participant "<<router>>\n:auth" as routerAuth
+participant "<<controllers>>\n:auth" as controllersAuth
+participant "<<model>>\n:User" as modelUser
+database "<<MongoDB>>\n:users" as UsersDatabase
+
+
+alt Login User
+    client->server ++: req.post('/api/v1/auth/login')
+    server->routerAuth ++: app.use('/auth', auth)
+end
+
+routerAuth -> controllersAuth ++: login()
+controllersAuth -> modelUser ++: User.findOne({ email }).select('+password')
+modelUser -> UsersDatabase ++: UserSchema
+UsersDatabase --> modelUser --: User Data
+alt Password Unmatch
+    controllersAuth -> modelUser ++: user.matchPassword(password)
+else Invalid Credentials
+    controllersAuth -> client --: response (Invalid Credentials)
+end
+
+alt Password Matches
+    controllersAuth -> controllersAuth ++: sendTokenResponse(user, 200, res)
+    controllersAuth -> client --: response (Logged In)
+end
+
+
+@enduml
