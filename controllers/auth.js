@@ -101,3 +101,13 @@ exports.updateProfile = async (req, res, next) => {
         res.status(500).json({ success: false, error: 'Server error' });
     }
 };
+
+exports.userRecord = async (req, res, next) => {
+    try {
+        const users = await User.find({}, 'id name email picture tel');
+        res.status(200).json({ success: true, data: users });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: 'Server error' });
+    }
+};

@@ -87,7 +87,10 @@ exports.addBooking = async (req, res, next) => {
         if (dayDiff > 3) {
             return res.status(400).json({ success: false, message: "Booking period cannot exceed 3 days" });
         }
-
+        
+        if (req.body.promotion) {
+            req.body.promotion = req.body.promotion;
+        }
     
         const booking = await Booking.create(req.body);
 
