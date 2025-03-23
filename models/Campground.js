@@ -8,7 +8,6 @@ const CampgroundSchema = new mongoose.Schema({
         trim : true,
         maxlength : [50, 'Name cannot be more than 50 characters']
     },
-    slug : String,
     address: {
         type: String,
         required: [true, 'Please add an address']
@@ -67,7 +66,7 @@ CampgroundSchema.virtual('promotions', {
 CampgroundSchema.pre('save', async function(next) {
 
     try {
-        const slugify = require('slugify');
+        //const slugify = require('slugify');
         next();
     } catch (err) {
         next(err);
@@ -77,17 +76,6 @@ CampgroundSchema.pre('save', async function(next) {
         next();
     }
 
-    let originalSlug = slugify(this.name, { lower: true });
-    let uniqueSlug = originalSlug;
-    let counter = 1;
-
-    while (await this.constructor.findOne({ slug: uniqueSlug })) {
-        uniqueSlug = `${originalSlug}-${counter}`;
-        counter++;
-    }
-
-    this.slug = uniqueSlug;
-    next();
 });
 
 CampgroundSchema.pre('deleteOne', {document:true, query:false},async function(next) {

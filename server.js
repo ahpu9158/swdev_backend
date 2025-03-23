@@ -50,7 +50,7 @@ app.use(limiter);
 
 app.use(hpp());
 
-app.use(cors());
+//app.use(cors());
 
 const swaggerOptions = {
     swaggerDefinition: {
