@@ -55,7 +55,7 @@ exports.getReviews = async (req, res, next) => {
         // Executing query
         const reviews = await query.populate({
             path: 'campground',
-            select: 'name address tel'
+            select: 'name address tel image description'
         });
 
         // Pagination result
