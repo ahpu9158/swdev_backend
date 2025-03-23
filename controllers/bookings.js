@@ -18,12 +18,12 @@ exports.getBookings = async (req, res, next) => {
             console.log(req.params.campgroundId);
             query = Booking.find({ campground: req.params.campgroundId }).populate({
                 path: 'campground',
-                select: 'name address tel'
+                select: 'name address tel image'
             });
         } else {
             query = Booking.find().populate({
                 path: 'campground',
-                select: 'name address tel'
+                select: 'name address tel image'
             });
         }
     }
@@ -46,7 +46,7 @@ exports.getBooking = async (req, res, next) => {
     try {
         const booking = await Booking.findById(req.params.id).populate({
             path: 'campground',
-            select: 'name address tel'
+            select: 'name address tel image'
         });
 
         if (!booking) {
