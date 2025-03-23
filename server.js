@@ -83,6 +83,22 @@ app.use('/api/v1/bookings', bookings);
 app.use('/api/v1/promotions', promotions);
 app.use('/api/v1/reviews', reviews);
 
+let likeCounts = { button1: 0, button2: 0, button3: 0 };
+
+app.post("/api/update-likes/:buttonId", (req, res) => {
+    const { buttonId } = req.params;
+    if (likeCounts.hasOwnProperty(buttonId)) {
+        likeCounts[buttonId] += 1; // Increment the count for the specified button
+        //console.log(`Updated Likes for ${buttonId}:`, likeCounts[buttonId]);
+        res.json({ success: true, likes: likeCounts });
+    } else {
+        res.status(400).json({ success: false, message: "Invalid button ID" });
+    }
+});
+app.get("/api/get-likes", (req, res) => {
+    res.json(likeCounts);
+});
+
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`));
 
